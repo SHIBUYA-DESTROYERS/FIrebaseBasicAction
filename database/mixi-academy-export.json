@@ -1,0 +1,9 @@
+{
+  "message" : "Hello Firebase",
+  "users" : {
+    "Naohiro" : {
+      "address" : "Nagoya, JP",
+      "name" : "Naohiro Kurihara"
+    }
+  }
+}
