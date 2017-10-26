@@ -1,9 +1,16 @@
 {
-  "message" : "Hello Firebase",
-  "users" : {
-    "Naohiro" : {
-      "address" : "Nagoya, JP",
-      "name" : "Naohiro Kurihara"
+  "messages" : {
+    "01" : {
+      "body" : "Hi, there!",
+      "sender" : "John"
+    },
+    "02" : {
+      "body" : "What's up?",
+      "sender" : "Steve"
+    },
+    "03" : {
+      "body" : "hey hey hey!",
+      "sender" : "Bill"
     }
   }
 }
