@@ -2,15 +2,28 @@
   "messages" : {
     "01" : {
       "body" : "Hi, there!",
-      "sender" : "John"
+      "sender" : "John",
+      "timestamp" : 20160123
     },
     "02" : {
       "body" : "What's up?",
-      "sender" : "Steve"
+      "sender" : "Steve",
+      "timestamp" : 20151004
     },
     "03" : {
       "body" : "hey hey hey!",
-      "sender" : "Bill"
+      "sender" : "Bill",
+      "timestamp" : 20151217
+    },
+    "04" : {
+      "body" : "ho ho ho:)",
+      "sender" : "Mike",
+      "timestamp" : 20160403
+    },
+    "05" : {
+      "body" : "howdy",
+      "sender" : "Clint",
+      "timestamp" : 20140411
     }
   }
 }

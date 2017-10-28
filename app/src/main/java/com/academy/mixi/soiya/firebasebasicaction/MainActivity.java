@@ -9,13 +9,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
     DatabaseReference myRef;
     FirebaseDatabase database;
-    ChildEventListener cel;
     ValueEventListener vel;
+    Query orderByChildQuery;
+    Query orderByKeyQuery;
     static final String TAG = "Firebase";
 
     @Override
@@ -29,17 +31,19 @@ public class MainActivity extends AppCompatActivity {
         myRef = database.getReference("/messages");
 
         // 変更が起こるとノードの要素を全部読み込む
-        // mode = 1
+        final int BASIC = 1;
         vel= new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+                Log.d(TAG, "onDataChange ok");
                 // getChildren()メソッドで各要素をコレクションとして取り出す
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
                     String sender = chatMessage.sender;
                     String body = chatMessage.body;
-                    Log.d(TAG, String.format("onDataChange(), sender:%s, body:%s", sender, body));
+                    long timestamp = chatMessage.timestamp;
+                    Log.d("Firebase", String.format("onChildAdded, sender:%s, body:%s, timestamp:%d", sender, body, timestamp));
                 }
             }
 
@@ -50,61 +54,28 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        // 細かい変更を把握することができる
-        // mode = 2
-        cel = new ChildEventListener() {
+        // timestampを基準にソートしてくれた結果を吐く (昇順)
+        final int ORDER_BY_CHILD = 2;
+        orderByChildQuery = myRef.orderByChild("timestamp");
 
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
-                String sender = chatMessage.sender;
-                String body = chatMessage.body;
-                Log.d(TAG, String.format("onChildAdded(), sender:%s, body:%s, previousChildName:%s", sender, body, s));
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // 読み込みに失敗したら呼び出される
-                Log.w(TAG, "Failed to read value.", databaseError.toException());
-            }
-        };
+        // 子要素のkey名でソートする (昇順)
+        // 今回参照されるのは 01, 02, 03...の部分でもともと昇順なので結果は変わらない
+        final int ORDER_BY_KEY = 3;
+        orderByKeyQuery = myRef.orderByKey();
 
 
-        int mode = 4;
+
+        int mode = BASIC;
 
         switch (mode){
-            case 1:
+            case BASIC:
                 myRef.addValueEventListener(vel);
                 break;
-            case 2:
-                myRef.addChildEventListener(cel);
+            case ORDER_BY_CHILD:
+                orderByChildQuery.addValueEventListener(vel);
                 break;
-            case 3:
-                // 1回だけ呼び出される
-                myRef.addListenerForSingleValueEvent(vel);
-                break;
-            case 4:
-                /*
-                  case3と同じ結果になると思ったが，Databaseから
-                  値の受け渡しは確認できなかった．
-                 */
-                myRef.addValueEventListener(vel);
-                myRef.removeEventListener(vel);
+            case ORDER_BY_KEY:
+                orderByKeyQuery.addValueEventListener(vel);
                 break;
         }
 
